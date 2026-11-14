@@ -1,0 +1,11 @@
+# CorteIA Studio - development tools (not needed to run or build the app).
+#
+#     . .venv/bin/activate            # .venv\Scripts\activate on Windows
+#     pip install -r requirements-dev.txt
+#     pytest -q
+#     ruff check corteia assets && black --check corteia
+#
+pytest>=8.2
+pytest-qt>=4.4          # offscreen Qt widgets for the UI smoke tests
+ruff>=0.4
+black>=24.4

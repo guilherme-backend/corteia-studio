@@ -1,0 +1,6 @@
+Ícones opcionais da interface.
+
+O programa usa os ícones padrão do Qt. Se você colocar aqui um PNG com um
+destes nomes, ele é usado no lugar: video.png, import.png, clips.png,
+editor.png, export.png, settings.png, magic.png, refresh.png, warning.png.
+Recomendado: 24x24 com alpha, mesmo tom do restante da interface.

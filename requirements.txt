@@ -1,0 +1,104 @@
+# ============================================================================
+# CorteIA Studio - runtime dependencies
+#
+# Every pin below is the version that is actually installed and import-tested
+# in the reference venv (Python 3.12.3, Linux; the same wheels exist for
+# Windows amd64). Verified with:
+#
+#     . .venv/bin/activate && uv pip freeze        # or: pip freeze
+#
+# Install with:  pip install -r requirements.txt
+# Build-only tools (PyInstaller etc.) live in requirements-build.txt.
+#
+# FFmpeg is NOT a pip dependency: it is a separate native binary that must be
+# on PATH (or bundled in third_party/ffmpeg/). install.bat / install.sh check
+# it for you; see README.md -> "FFmpeg".
+# ============================================================================
+
+# --------------------------------------------------------------------------- #
+# GUI (Qt)
+# --------------------------------------------------------------------------- #
+# PySide6 pulls shiboken6 + pyside6-essentials + pyside6-addons (QtMultimedia,
+# QtSvg, ...). 6.12 is the version the UI was developed against; Qt 6.8+ is the
+# practical floor because of the graphics-effect APIs used in ui/theme.py.
+PySide6==6.12.0
+
+# --------------------------------------------------------------------------- #
+# ASR (speech to text with word timestamps)
+# --------------------------------------------------------------------------- #
+faster-whisper==1.2.1
+# ctranslate2 carries the compiled CPU/CUDA inference libraries that the
+# PyInstaller spec has to bundle; pin it explicitly so a rebuild is reproducible.
+ctranslate2==4.9.0
+# PyAV decodes the extracted WAV in-memory for faster-whisper (no ffmpeg CLI
+# round-trip). Installed automatically, pinned because it is ABI-sensitive.
+av==19.0.2
+# Model download + tokenizer support for faster-whisper.
+huggingface-hub==2.4.0
+tokenizers==0.23.3
+# faster-whisper uses onnxruntime for the optional Silero VAD; also handy for
+# future ONNX models. YuNet face detection does NOT need it (OpenCV has its own
+# DNN engine).
+onnxruntime==1.32.0
+
+# --------------------------------------------------------------------------- #
+# Visao (cenas, rostros, frames)
+# --------------------------------------------------------------------------- #
+# Scene detection (AdaptiveDetector/ContentDetector) used by corteia/core/scenes.py.
+scenedetect==0.7.3
+# NOTE ON THE TWO OpenCV FLAVOURS -------------------------------------------
+# scenedetect depends on the *GUI* build (opencv-python), which also lands in
+# the venv. We install the headless build AFTER it so that `import cv2` resolves
+# to the headless wheel: it never opens its own Qt/X11 windows, which would
+# fight the PySide6 event loop. Both are listed by `pip freeze`; that is normal.
+#
+# >=4.10 is deliberate: the app supports OpenCV 4.x and 5.x at once.
+#   * YuNet (corteia/resources/models/face_detection_yunet_2023mar.onnx) is the
+#     primary face detector and exists in both (cv2.FaceDetectorYN since 4.5.4).
+#   * cv2.CascadeClassifier (Haar) is only a fallback and only exists in 4.x;
+#     faces.py falls back gracefully when it is missing (5.x).
+# Tested exact version in the reference venv: 5.0.0.93.
+opencv-python-headless>=4.10,<6
+# Must stay >=1.26: OpenCV 5 and ctranslate2 wheels are built against NumPy 2.
+# Tested exact version: 2.5.4.
+numpy>=2.1,<3
+
+# --------------------------------------------------------------------------- #
+# Midia (download de sources, legendas, imagens auxiliares)
+# --------------------------------------------------------------------------- #
+# Video downloading (only used after the user grants consent in
+# Configurations -> Download; the app refuses otherwise).
+yt-dlp==2026.10.26
+
+# --------------------------------------------------------------------------- #
+# Util
+# --------------------------------------------------------------------------- #
+# NOT imported by corteia/: llm.py speaks HTTPS with urllib so the ranking
+# works without this package. It stays pinned for users who prefer the
+# official SDK in their own scripts, and `--check` reports it as optional.
+openai==3.51.0
+# CPU/RAM probing and per-job thread caps (corteia/hardware.py).
+psutil>=5.9
+# XDG/app-data helpers; the app's own corteia.paths handles the Windows layout.
+platformdirs>=4.2
+# Progress bars used by scenedetect/faster-whisper downloads.
+tqdm>=4.66
+
+# --------------------------------------------------------------------------- #
+# Windows only
+# --------------------------------------------------------------------------- #
+# Not imported by the processing core. It is only needed for the optional task
+# bar integration (AppUserModelID) and power-state checks on Windows, and it is
+# what makes the packaged .exe show the right icon/group in the task bar.
+pywin32>=306; sys_platform == "win32"
+
+# --------------------------------------------------------------------------- #
+# Not here on purpose
+#   * torch / torchaudio / whisper.cpp : the app never imports torch. CUDA comes
+#     from ctranslate2 + the NVIDIA drivers. Installing torch would add ~2.5 GB
+#     to the bundle for nothing (see the `excludes` list in corteia.spec).
+#   * Pillow : nothing in corteia/ imports PIL and no installed package
+#     requires it (verified with `pip show pillow`, Required-by is empty).
+#   * pytest / ruff / black : development tools, see requirements-dev.txt.
+#   * pyinstaller : see requirements-build.txt.
+# --------------------------------------------------------------------------- #

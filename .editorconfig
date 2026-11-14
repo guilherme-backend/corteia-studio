@@ -1,0 +1,86 @@
+# EditorConfig: https://editorconfig.org
+# Mantém o formato que o projeto já usa (ruff/black line-length = 100,
+# aspas duplas em Python, CRLF nos .bat/.iss por exigência do cmd/Inno).
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 4
+max_line_length = 100
+
+# --------------------------------------------------------------------------- #
+# Python
+# --------------------------------------------------------------------------- #
+[*.py]
+indent_style = space
+indent_size = 4
+quote_type = double
+# Os fontes do app têm strings longas em PT-BR (avisos ao usuário); E501 é
+# ignorado no ruff, então aqui vale o limite brando de 100 colunas acima.
+
+[*.pyi]
+indent_size = 4
+
+# --------------------------------------------------------------------------- #
+# Arquivos de configuração do projeto
+# --------------------------------------------------------------------------- #
+[*.{toml,cfg,ini}]
+indent_size = 2
+
+[*.json]
+indent_size = 2
+# Os JSONs de tradução (corteia/resources/i18n/*.json) são escritos com
+# ensure_ascii=False; manter UTF-8 aqui evita que o editor os corrompa.
+
+[*.{yaml,yml}]
+indent_size = 2
+
+# --------------------------------------------------------------------------- #
+# Markdown e documentação: dois espaços no fim da linha significam quebra
+# forçada, então a limpeza automática de espaços é indesejada.
+# --------------------------------------------------------------------------- #
+[*.md]
+trim_trailing_whitespace = false
+max_line_length = off
+indent_size = 2
+
+# --------------------------------------------------------------------------- #
+# Shell
+# --------------------------------------------------------------------------- #
+[*.sh]
+indent_size = 4
+end_of_line = lf
+
+# --------------------------------------------------------------------------- #
+# Windows: cmd.exe e Inno Setup exigem CRLF
+# --------------------------------------------------------------------------- #
+[*.{bat,cmd,ps1}]
+end_of_line = crlf
+indent_size = 4
+trim_trailing_whitespace = false
+
+[*.iss]
+end_of_line = crlf
+indent_size = 2
+trim_trailing_whitespace = false
+
+[*.spec]
+end_of_line = lf
+indent_size = 4
+
+# --------------------------------------------------------------------------- #
+# Arquivos gerados / binários: nada de reformatar
+# --------------------------------------------------------------------------- #
+[{package-lock.json,yarn.lock}]
+insert_final_newline = unset
+
+[*.{ico,png,onnx,mp4,mov,mkv,webm,wav}]
+charset = unset
+end_of_line = unset
+insert_final_newline = unset
+trim_trailing_whitespace = unset
+indent_size = unset

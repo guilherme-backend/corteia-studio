@@ -1,0 +1,131 @@
+# --------------------------------------------------------------------------- #
+# Python
+# --------------------------------------------------------------------------- #
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg
+*.egg-info/
+.installed.cfg
+develop-eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+MANIFEST
+
+# --------------------------------------------------------------------------- #
+# Ambientes virtuais criados por install.sh / install.bat
+# --------------------------------------------------------------------------- #
+.venv/
+venv/
+env/
+ENV/
+pythonenv*/
+
+# --------------------------------------------------------------------------- #
+# PyInstaller / builds  (gerados por build_linux.sh e build_windows.bat)
+# --------------------------------------------------------------------------- #
+build/
+dist/
+*.manifest
+*.spec.bak
+# cache do PyInstaller quando HOME coincide com a pasta do projeto
+.cache/pyi-cache/
+
+# --------------------------------------------------------------------------- #
+# Inno Setup (Windows)
+# --------------------------------------------------------------------------- #
+installer/Output/
+CorteIA-Setup-*.exe
+*.iso
+
+# --------------------------------------------------------------------------- #
+# Modelos baixados em disco  (faster-whisper / CTranslate2 / ONNX)
+# Os modelos que ACOMPANHAM o app ficam em corteia/resources/models/ e são
+# versionados.  YuNet é o único .onnx permitido dentro do repositório.
+# --------------------------------------------------------------------------- #
+models/
+*.bin
+*.onnx
+*.pt
+*.gguf
+*.ct2
+!corteia/resources/models/*.onnx
+# cache do huggingface_hub, se alguém apontar HF_HOME para cá
+.cache/huggingface/
+hf_cache/
+
+# --------------------------------------------------------------------------- #
+# FFmpeg colocado à mão pelo usuário (third_party/ffmpeg)
+# --------------------------------------------------------------------------- #
+third_party/ffmpeg/*.exe
+third_party/ffmpeg/bin/
+
+# --------------------------------------------------------------------------- #
+# Caches e arquivos de dados locais do app
+# --------------------------------------------------------------------------- #
+.cache/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+tox/.tox/
+.coverage
+.coverage.*
+coverage.xml
+htmlcov/
+*.cover
+profile_default/
+ipython_config.py
+
+# --------------------------------------------------------------------------- #
+# Registros de log e saída temporária de renderização
+# --------------------------------------------------------------------------- #
+logs/
+*.log
+corteia.log*
+tmp/
+temp/
+*.ass.tmp
+*.mp4.tmp
+*.part
+
+# --------------------------------------------------------------------------- #
+# Artefatos de vídeo/áudio de teste (reproduzíveis, não versionar)
+# --------------------------------------------------------------------------- #
+scripts/_media/
+scripts/_shots/
+scripts/_shots_clips/
+scripts/_smoke_asr_output.txt
+*.cortes.json
+smoke-work/
+
+# --------------------------------------------------------------------------- #
+# Editores e SO
+# --------------------------------------------------------------------------- #
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+desktop.ini
+$RECYCLE.BIN/
+
+# --------------------------------------------------------------------------- #
+# Segredos locais (chave de API fica no config.json do usuário, nunca aqui)
+# --------------------------------------------------------------------------- #
+.env
+.env.*
+!.env.example
+*.key
+secrets.json

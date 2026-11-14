@@ -1,0 +1,38 @@
+# ============================================================================
+# CorteIA Studio - build / packaging dependencies (install ON TOP of
+# requirements.txt, in the same venv used to build).
+#
+#     . .venv/bin/activate            # .venv\Scripts\activate on Windows
+#     pip install -r requirements.txt -r requirements-build.txt
+#
+# Used by build_windows.bat / build_windows.ps1 / build_linux.sh / corteia.spec.
+# ============================================================================
+
+-r requirements.txt
+
+# Freezer. 6.11+ is required for Python 3.12/3.13 support and for the fixed
+# ctranslate2 / PySide6 hook handling; 6.22.3 is what the reference build used.
+pyinstaller>=6.11,<7
+
+# Extra community hooks (av, ctranslate2, onnxruntime). PyInstaller ships the
+# PySide6 hook itself; this package adds the media/AI ones we rely on.
+pyinstaller-hooks-contrib>=2024.8
+
+# Icon pipeline for the assets/ folder (also a runtime dep, pinned here so a
+# build machine without the full app install can still run make_icons.py).
+pillow>=10.2
+
+# Windows: pefile/win32ctypes are pulled by PyInstaller automatically, but
+# pinning pywin32 here avoids the "Could not import win32api" warning during
+# the spec analysis on fresh CI images.
+pywin32>=306; sys_platform == "win32"
+
+# ---------------------------------------------------------------------------
+# NOT installed with pip (checked by the build scripts, mentioned for CI):
+#
+#   * Inno Setup 6           -> https://jrsoftware.org/isdl.php   (iscc.exe)
+#   * FFmpeg >= 6 shared build -> https://www.gyan.dev/ffmpeg/builds/
+#     (copy ffmpeg.exe/ffprobe.exe into third_party/ffmpeg/ to ship them)
+#   * Microsoft Visual C++ 2015-2022 Redistributable x64 -> needed at *runtime*
+#     by Qt6*.dll and ctranslate2.dll on a clean Windows install.
+# ---------------------------------------------------------------------------
