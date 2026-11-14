@@ -61,10 +61,10 @@ jobs:
       # 3.11 é o piso suportado (run.py exige >= 3.11). O ambiente de
       # referência local usa 3.12; fixar 3.11 aqui dá a combinação mais
       # conservadora de wheels publicados.
-      - name: Set up Python 3.11
+      - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
           cache-dependency-path: |
             requirements.txt
