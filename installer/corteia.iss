@@ -81,7 +81,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; \
 
 [Components]
 ; O programa em si, nao desmarcavel.
-Name: "main"; Description: "{#MyAppName} (programa)"; Flags: fixed types: full
+Name: "main"; Description: "{#MyAppName} (programa)"; Flags: fixed; Types: full
 ; Os pesos do Whisper NAO vao no instalador: 3 GB de weights nao combinam com
 ; um download de 400 MB, e o app baixa o modelo sozinho na primeira execucao.
 ; Estas linhas so fazem sentido se quem compilou colocar o modelo pre-baixado
