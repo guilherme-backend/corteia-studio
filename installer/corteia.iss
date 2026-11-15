@@ -88,7 +88,7 @@ Name: "main"; Description: "{#MyAppName} (programa)"; Flags: fixed; Types: full
 ; em _models\ ao lado deste arquivo (skipifsourcedoesntexist abaixo).
 Name: "model_tiny"; Description: "Modelo Whisper tiny (78 MB)"; Types: custom full
 Name: "model_base"; Description: "Modelo Whisper base (148 MB, padrao)"; Types: custom full
-Name: "model_small"; Description: "Modelo Whisper small (486 MB)"; Types: none
+Name: "model_small"; Description: "Modelo Whisper small (486 MB)"; Types: custom
 
 [Files]
 ; O bundle congelado inteiro, preservando a arvore de dist\CorteIA Studio\.
