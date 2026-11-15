@@ -153,6 +153,12 @@ class FunctionJob(QRunnable):
         except Exception as exc:  # noqa: BLE001 - a UI precisa mostrar o erro
             self.error = ("".join(traceback.format_exception_only(type(exc), exc)).strip()
                           or str(exc) or exc.__class__.__name__)
+            # MediaError mantém o stderr original em ``detail``. Sem expô-lo,
+            # o importador reduz qualquer falha do ffprobe a "arquivo incompatível",
+            # impossibilitando distinguir corrupção do arquivo de erro do app.
+            detail = str(getattr(exc, "detail", "") or "").strip()
+            if detail and detail not in self.error:
+                self.error += "\n\nDetalhes técnicos do FFmpeg:\n" + detail[-3000:]
             self._finished = True
             self.finished_at = time.time()
             if self.cancel_event.is_set():
