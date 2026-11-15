@@ -82,13 +82,8 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; \
 [Components]
 ; O programa em si, nao desmarcavel.
 Name: "main"; Description: "{#MyAppName} (programa)"; Flags: fixed; Types: full
-; Os pesos do Whisper NAO vao no instalador: 3 GB de weights nao combinam com
-; um download de 400 MB, e o app baixa o modelo sozinho na primeira execucao.
-; Estas linhas so fazem sentido se quem compilou colocar o modelo pre-baixado
-; em _models\ ao lado deste arquivo (skipifsourcedoesntexist abaixo).
-Name: "model_tiny"; Description: "Modelo Whisper tiny (78 MB)"; Types: custom full
-Name: "model_base"; Description: "Modelo Whisper base (148 MB, padrao)"; Types: custom full
-Name: "model_small"; Description: "Modelo Whisper small (486 MB)"; Types: custom
+; Os pesos do Whisper nao vao no instalador: o app baixa o modelo escolhido
+; pelo usuario sozinho na primeira execucao.
 
 [Files]
 ; O bundle congelado inteiro, preservando a arvore de dist\CorteIA Studio\.
@@ -96,13 +91,6 @@ Source: "{#MyBuildDir}\*"; DestDir: "{app}"; \
     Flags: ignoreversion recursesubdirs createallsubdirs
 ; O icone usado pelo atalho, fora do bundle para o caminho ficar curto.
 Source: "assets\icon.ico"; DestDir: "{app}\assets"; Flags: ignoreversion
-; Modelos opcionais pre-baixados (vao para a pasta de dados do usuario, que e
-; onde corteia/paths.py models_dir() procura). Coloque o modelo em
-; installer\_models\<nome>\ antes de compilar; sem a pasta, a linha e ignorada.
-Source: "installer\_models\*"; DestDir: "{userappdata}\CorteIA Studio\models"; \
-    Flags: ignoreversion recursesubdirs createallsubdirs skipifsourcedoesntexist \
-    Components: model_tiny model_base model_small
-
 [Dirs]
 ; Pastas de dados/estado. O app tambem as cria sozinho ao iniciar; cria-las
 ; aqui garante a permissao correta desde o inicio para instalacoes por maquina.
