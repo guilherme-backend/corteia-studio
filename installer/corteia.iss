@@ -123,9 +123,9 @@ Filename: "{app}\{#MyAppExeName}"; Parameters: "--check"; \
 Type: filesandordirs; Name: "{localappdata}\CorteIA Studio\Temp"
 
 [Code]
-; O aplicativo verifica FFmpeg, CUDA/CPU e demais pré-requisitos ao iniciar.
-; O instalador permanece sem lógica adicional para manter compatibilidade com
-; diferentes versões do compilador Inno Setup 6.
+// O aplicativo verifica FFmpeg, CUDA/CPU e demais pré-requisitos ao iniciar.
+// O instalador permanece sem lógica adicional para manter compatibilidade com
+// diferentes versões do compilador Inno Setup 6.
 function InitializeSetup(): Boolean;
 begin
   Result := True;
