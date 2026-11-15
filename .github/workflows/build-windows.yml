@@ -57,10 +57,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # ------------------------------------------------------ python 3.11 ---
-      # 3.11 é o piso suportado (run.py exige >= 3.11). O ambiente de
-      # referência local usa 3.12; fixar 3.11 aqui dá a combinação mais
-      # conservadora de wheels publicados.
+      # ------------------------------------------------------ python 3.12 ---
+      # PyAV 19.0.2, fixado em requirements.txt, deixou de publicar wheel
+      # para Python 3.11. O ambiente de referência e as dependências do app
+      # são testados em Python 3.12, que também é >= do piso 3.11 do run.py.
       - name: Set up Python 3.12
         uses: actions/setup-python@v5
         with:
@@ -77,7 +77,15 @@ jobs:
           Write-Output "OS: $((Get-CimInstance Win32_OperatingSystem).Caption)"
           Write-Output "Arch: $env:PROCESSOR_ARCHITECTURE"
 
-      
+      # ------------------------------------------------------- dependências -
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip setuptools wheel
+          python -m pip install -r requirements.txt -r requirements-build.txt
+
+      # O modelo YuNet é um recurso obrigatório para o rastreamento facial.
+      # Alguns clones do repositório não o trazem (arquivo binário .onnx),
+      # então o CI o baixa explicitamente antes do PyInstaller.
       - name: Download YuNet face model
         shell: pwsh
         run: |
@@ -88,12 +96,7 @@ jobs:
           if (!(Test-Path $model) -or ((Get-Item $model).Length -lt 100000)) {
             throw "Modelo YuNet ausente ou incompleto: $model"
           }
-
-      
-      - name: Install build dependencies
-        run: |
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install -r requirements.txt -r requirements-build.txt
+          Get-Item $model | Select-Object FullName, Length
 
       - name: Freeze with PyInstaller (one-dir)
         run: |
@@ -142,17 +145,27 @@ jobs:
           retention-days: ${{ github.event.inputs.keep_artifacts_days || 30 }}
 
       # ------------------------------------------------------- Inno Setup ---
-      # Download + instalação silenciosa pela URL OFICIAL do jrsoftware.org.
-      # `is.exe` é o instalador do Inno Setup 6; /CURRENTUSER evita exigir
-      # admin na imagem do runner e vai parar em %LOCALAPPDATA%\Programs.
+      # A URL antiga jrsoftware.org/download.php/is.exe agora redireciona
+      # para uma página HTML de downloads, não para um executável. Use o
+      # artefato oficial versionado no GitHub e valide tamanho, PE e SHA256.
       - name: Download and install Inno Setup 6 (official URL)
         shell: pwsh
         run: |
-          $url = "https://jrsoftware.org/download.php/is.exe"
+          $url = "https://github.com/jrsoftware/issrc/releases/download/is-6_7_4/innosetup-6.7.4.exe"
+          $expectedSha256 = "A549929319F9120716677C685535CA4671E4B937B5FDC87E2585F32D8EB30E8C"
           $installer = "$env:RUNNER_TEMP\innosetup.exe"
           Write-Output "Baixando Inno Setup 6 de $url"
-          Invoke-WebRequest -Uri $url -OutFile $installer -UseBasicParsing
-          Write-Output "SHA256: $((Get-FileHash $installer -Algorithm SHA256).Hash)"
+          curl.exe --fail --location --retry 5 --retry-all-errors --output $installer $url
+          if (!(Test-Path $installer) -or ((Get-Item $installer).Length -lt 1000000)) {
+            throw "Download do Inno Setup ausente ou muito pequeno."
+          }
+          $actualSha256 = (Get-FileHash $installer -Algorithm SHA256).Hash.ToUpperInvariant()
+          Write-Output "SHA256: $actualSha256"
+          if ($actualSha256 -ne $expectedSha256) {
+            throw "SHA256 inesperado no instalador do Inno Setup."
+          }
+          $mz = [Text.Encoding]::ASCII.GetString([IO.File]::ReadAllBytes($installer)[0..1])
+          if ($mz -ne "MZ") { throw "O download não é um executável PE válido." }
           # /VERYSILENT sem GUI, /SUPPRESSLICENSES aceita a EULA, /NORESTART
           # não reinicia a máquina, /CURRENTUSER sem elevação.
           $p = Start-Process -FilePath $installer -Wait -NoNewWindow -PassThru `
